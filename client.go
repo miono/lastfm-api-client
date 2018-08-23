@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -40,12 +42,12 @@ type RecentTracks struct {
 type RecentTrack struct {
 	Artist     `json:"artist"`
 	Name       string `json:"name"`
-	Streamable string `json:"streamable"`
+	Streamable int    `json:"streamable,string"`
 	Mbid       string `json:"mbid"`
 	Album      `json:"album"`
 	URL        string  `json:"url"`
 	Image      []Image `json:"image"`
-	Date       `json:"date"`
+	Date       Date    `json:"date"`
 }
 
 // Artist is the mbid and name of an artist
@@ -68,8 +70,24 @@ type Image struct {
 
 // Date is the date when the track was played
 type Date struct {
-	Uts  string `json:"uts"`
-	Text string `json:"text"`
+	Uts Uts `json:"uts"`
+}
+
+// Uts contains just the time-stamp
+type Uts struct {
+	Time time.Time
+}
+
+// UnmarshalJSON converts the Uts-field of the Date-struct to a time.Time
+func (u *Uts) UnmarshalJSON(b []byte) error {
+	timestampString := strings.Trim(string(b), "\"")
+	timestampInt, err := strconv.Atoi(timestampString)
+	if err != nil {
+		return err
+	}
+	u.Time = time.Unix(int64(timestampInt), 0)
+	return nil
+
 }
 
 // GetRecentTracks gets the recent tracks for a user
@@ -90,7 +108,6 @@ func (c *Client) GetRecentTracks(user string) []RecentTrack {
 	if err != nil {
 		panic(err)
 	}
-	// fmt.Println(ret.RecentTracks.RecentTracks[0])
 	for _, track := range ret.RecentTracks.RecentTracks {
 		tracks = append(tracks, track)
 	}
