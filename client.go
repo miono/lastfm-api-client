@@ -47,7 +47,8 @@ type RecentTrack struct {
 	Album      `json:"album"`
 	URL        string  `json:"url"`
 	Image      []Image `json:"image"`
-	Date       Date    `json:"date"`
+	PlayDate   time.Time
+	TempDate   Date `json:"date"`
 }
 
 // Artist is the mbid and name of an artist
@@ -109,6 +110,7 @@ func (c *Client) GetRecentTracks(user string) []RecentTrack {
 		panic(err)
 	}
 	for _, track := range ret.RecentTracks.RecentTracks {
+		track.PlayDate = track.TempDate.Uts.Time
 		tracks = append(tracks, track)
 	}
 
