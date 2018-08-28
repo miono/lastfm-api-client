@@ -73,8 +73,8 @@ func (u *Uts) UnmarshalJSON(b []byte) error {
 }
 
 // GetRecentTracks gets the recent tracks for a user
-func (c *Client) GetRecentTracks(user string) []RecentTrack {
-	url := fmt.Sprintf("method=user.getrecenttracks&user=%v&api_key=%v&format=json&limit=3", user, c.Apikey)
+func (c *Client) GetRecentTracks(user string, limit int) []RecentTrack {
+	url := fmt.Sprintf("method=user.getrecenttracks&user=%v&api_key=%v&format=json&limit=%d", user, c.Apikey, limit)
 	reqURL := c.BaseURL + url
 	response, err := c.httpClient.Get(reqURL)
 	if err != nil {
