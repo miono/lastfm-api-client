@@ -10,6 +10,7 @@ import (
 type Artist struct {
 	Text string `json:"#text"`
 	Mbid string `json:"mbid"`
+	URL  string `json:"url"`
 }
 
 // Album is the mbid and name of an album
